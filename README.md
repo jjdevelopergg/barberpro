@@ -1,5 +1,7 @@
 # Sistema de Agendamento — Barbearia
 
+🔗 **Live:** [https://barbearia-nu-topaz.vercel.app](https://barbearia-nu-topaz.vercel.app)
+
 Aplicação web completa de agendamento online para barbearias. Desenvolvida com Next.js, TypeScript e design minimalista.
 
 ## Sobre
