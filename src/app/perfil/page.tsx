@@ -9,6 +9,11 @@ import { updateProfile, updatePassword, EmailAuthProvider, reauthenticateWithCre
 import toast from "react-hot-toast";
 import { FiUser, FiMail, FiPhone, FiLock, FiSave } from "react-icons/fi";
 
+function isFirebaseConfigured(): boolean {
+  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+  return Boolean(apiKey && apiKey !== "your_api_key_here" && apiKey.length > 10);
+}
+
 export default function PerfilPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -25,8 +30,11 @@ export default function PerfilPage() {
     const fetch = async () => {
       if (!user) return;
       setName(user.displayName || "");
-      const d = await getDoc(doc(db, "users", user.uid));
-      if (d.exists()) setPhone(d.data().phone || "");
+      if (!isFirebaseConfigured()) return;
+      try {
+        const d = await getDoc(doc(db, "users", user.uid));
+        if (d.exists()) setPhone(d.data().phone || "");
+      } catch { /* Firebase not configured */ }
     };
     if (user) fetch();
   }, [user, authLoading, router]);
@@ -34,8 +42,13 @@ export default function PerfilPage() {
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
-    try { await updateProfile(user, { displayName: name }); await updateDoc(doc(db, "users", user.uid), { name, phone }); toast.success("Salvo!"); }
-    catch { toast.error("Erro."); }
+    try {
+      if (isFirebaseConfigured()) {
+        await updateProfile(user, { displayName: name });
+        await updateDoc(doc(db, "users", user.uid), { name, phone });
+      }
+      toast.success("Salvo!");
+    } catch { toast.error("Erro."); }
     finally { setSaving(false); }
   };
 
@@ -45,8 +58,10 @@ export default function PerfilPage() {
     if (newPassword.length < 6) { toast.error("Mínimo 6 caracteres."); return; }
     setChangingPassword(true);
     try {
-      await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, currentPassword));
-      await updatePassword(user, newPassword);
+      if (isFirebaseConfigured()) {
+        await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, currentPassword));
+        await updatePassword(user, newPassword);
+      }
       toast.success("Senha alterada!"); setCurrentPassword(""); setNewPassword(""); setConfirmNewPassword("");
     } catch { toast.error("Senha atual incorreta."); }
     finally { setChangingPassword(false); }

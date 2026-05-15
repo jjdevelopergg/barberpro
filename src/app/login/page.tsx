@@ -5,9 +5,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
+import { FiMail, FiLock, FiEye, FiEyeOff, FiInfo } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
-import { TEST_ACCOUNT } from "@/lib/firebase";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -24,8 +23,15 @@ export default function LoginPage() {
       await signIn(email, password);
       toast.success("Login realizado!");
       router.push("/agendar");
-    } catch {
-      toast.error("Credenciais inválidas.");
+    } catch (error: unknown) {
+      const err = error as { code?: string; message?: string };
+      if (err.code === "auth/demo-mode") {
+        toast.error(err.message || "Use a conta demo.");
+      } else if (err.code === "auth/invalid-credential" || err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
+        toast.error("Email ou senha incorretos.");
+      } else {
+        toast.error("Erro ao fazer login. Verifique suas credenciais.");
+      }
     } finally {
       setLoading(false);
     }
@@ -42,8 +48,9 @@ export default function LoginPage() {
   };
 
   const fillDemo = () => {
-    setEmail(TEST_ACCOUNT.email);
-    setPassword(TEST_ACCOUNT.password);
+    setEmail("admin@barberpro.com");
+    setPassword("admin123");
+    toast.success("Credenciais demo preenchidas!");
   };
 
   return (
@@ -51,9 +58,22 @@ export default function LoginPage() {
       <div style={{ width: "100%", maxWidth: "400px" }} className="animate-fade-up">
         <div className="card" style={{ padding: "44px 36px" }}>
           {/* Header */}
-          <div style={{ marginBottom: "36px" }}>
+          <div style={{ marginBottom: "32px" }}>
             <h1 style={{ color: "#fff", fontSize: "24px", fontWeight: 700, letterSpacing: "-0.5px" }}>Entrar</h1>
             <p style={{ color: "#555", fontSize: "13px", marginTop: "6px" }}>Acesse sua conta para agendar</p>
+          </div>
+
+          {/* Demo notice */}
+          <div style={{ backgroundColor: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: "10px", padding: "14px 16px", marginBottom: "24px", display: "flex", alignItems: "flex-start", gap: "10px" }}>
+            <FiInfo size={14} color="#666" style={{ marginTop: "2px", flexShrink: 0 }} />
+            <div>
+              <p style={{ color: "#888", fontSize: "12px", lineHeight: "1.5" }}>
+                Conta demo disponível para teste:
+              </p>
+              <p style={{ color: "#fff", fontSize: "12px", marginTop: "4px", fontFamily: "monospace" }}>
+                admin@barberpro.com / admin123
+              </p>
+            </div>
           </div>
 
           {/* Google */}
@@ -64,7 +84,7 @@ export default function LoginPage() {
           </button>
 
           {/* Divider */}
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", margin: "28px 0" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", margin: "24px 0" }}>
             <div style={{ flex: 1, height: "1px", backgroundColor: "#111" }} />
             <span style={{ color: "#333", fontSize: "11px" }}>ou</span>
             <div style={{ flex: 1, height: "1px", backgroundColor: "#111" }} />
@@ -72,7 +92,7 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: "18px" }}>
+            <div style={{ marginBottom: "16px" }}>
               <label style={{ display: "block", color: "#666", fontSize: "12px", fontWeight: 500, marginBottom: "8px" }}>Email</label>
               <div style={{ position: "relative" }}>
                 <FiMail size={14} style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#444" }} />
@@ -80,7 +100,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: "18px" }}>
+            <div style={{ marginBottom: "16px" }}>
               <label style={{ display: "block", color: "#666", fontSize: "12px", fontWeight: 500, marginBottom: "8px" }}>Senha</label>
               <div style={{ position: "relative" }}>
                 <FiLock size={14} style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#444" }} />
@@ -91,11 +111,15 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-              <button type="button" onClick={fillDemo} style={{ background: "none", border: "none", color: "#444", fontSize: "11px", cursor: "pointer", textDecoration: "underline" }}>
-                Usar conta demo
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+              <button type="button" onClick={fillDemo} style={{ background: "none", border: "1px solid #1a1a1a", color: "#888", fontSize: "11px", cursor: "pointer", padding: "6px 12px", borderRadius: "6px", transition: "all 0.2s" }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#333"; e.currentTarget.style.color = "#fff"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1a1a1a"; e.currentTarget.style.color = "#888"; }}>
+                Usar demo
               </button>
-              <Link href="/recuperar-senha" style={{ color: "#666", fontSize: "12px", textDecoration: "none" }}>
+              <Link href="/recuperar-senha" style={{ color: "#555", fontSize: "12px", textDecoration: "none" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#555")}>
                 Esqueceu a senha?
               </Link>
             </div>

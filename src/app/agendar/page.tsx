@@ -10,6 +10,11 @@ import { ptBR } from "date-fns/locale";
 import toast from "react-hot-toast";
 import { FiCalendar, FiClock, FiCheck, FiArrowRight, FiArrowLeft, FiUser } from "react-icons/fi";
 
+function isFirebaseConfigured(): boolean {
+  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+  return Boolean(apiKey && apiKey !== "your_api_key_here" && apiKey.length > 10);
+}
+
 const services = [
   { id: "corte", name: "Corte de Cabelo", duration: "30 min", price: "R$ 45" },
   { id: "barba", name: "Barba", duration: "20 min", price: "R$ 30" },
@@ -48,9 +53,12 @@ export default function AgendarPage() {
   useEffect(() => {
     const fetchSlots = async () => {
       if (!selectedDate || !selectedBarber) return;
-      const q = query(collection(db, "appointments"), where("date", "==", format(selectedDate, "yyyy-MM-dd")), where("barber", "==", selectedBarber));
-      const snap = await getDocs(q);
-      setBookedSlots(snap.docs.map((d) => d.data().time));
+      if (!isFirebaseConfigured()) { setBookedSlots([]); return; }
+      try {
+        const q = query(collection(db, "appointments"), where("date", "==", format(selectedDate, "yyyy-MM-dd")), where("barber", "==", selectedBarber));
+        const snap = await getDocs(q);
+        setBookedSlots(snap.docs.map((d) => d.data().time));
+      } catch { setBookedSlots([]); }
     };
     fetchSlots();
   }, [selectedDate, selectedBarber]);
@@ -59,12 +67,14 @@ export default function AgendarPage() {
     if (!user || !selectedService || !selectedBarber || !selectedDate || !selectedTime) return;
     setSubmitting(true);
     try {
-      await addDoc(collection(db, "appointments"), {
-        userId: user.uid, userName: user.displayName || "Usuário", userEmail: user.email,
-        service: selectedService.name, servicePrice: selectedService.price, barber: selectedBarber,
-        date: format(selectedDate, "yyyy-MM-dd"), time: selectedTime,
-        dayOfWeek: format(selectedDate, "EEEE", { locale: ptBR }), status: "confirmado", createdAt: new Date().toISOString(),
-      });
+      if (isFirebaseConfigured()) {
+        await addDoc(collection(db, "appointments"), {
+          userId: user.uid, userName: user.displayName || "Usuário", userEmail: user.email,
+          service: selectedService.name, servicePrice: selectedService.price, barber: selectedBarber,
+          date: format(selectedDate, "yyyy-MM-dd"), time: selectedTime,
+          dayOfWeek: format(selectedDate, "EEEE", { locale: ptBR }), status: "confirmado", createdAt: new Date().toISOString(),
+        });
+      }
       toast.success("Agendamento confirmado!");
       router.push("/meus-agendamentos");
     } catch { toast.error("Erro ao agendar."); }

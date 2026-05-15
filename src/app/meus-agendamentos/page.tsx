@@ -10,6 +10,11 @@ import toast from "react-hot-toast";
 import { FiCalendar, FiClock, FiTrash2, FiUser } from "react-icons/fi";
 import Link from "next/link";
 
+function isFirebaseConfigured(): boolean {
+  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+  return Boolean(apiKey && apiKey !== "your_api_key_here" && apiKey.length > 10);
+}
+
 interface Appointment { id: string; service: string; servicePrice: string; barber: string; date: string; time: string; dayOfWeek: string; }
 
 export default function MeusAgendamentosPage() {
@@ -22,6 +27,7 @@ export default function MeusAgendamentosPage() {
     if (!authLoading && !user) { router.push("/login"); return; }
     const fetch = async () => {
       if (!user) return;
+      if (!isFirebaseConfigured()) { setAppointments([]); setLoading(false); return; }
       try {
         const q = query(collection(db, "appointments"), where("userId", "==", user.uid));
         const snap = await getDocs(q);
