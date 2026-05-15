@@ -1,206 +1,131 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from "react";
-import {
-  User,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  signInWithPopup,
-  sendPasswordResetEmail,
-  updateProfile,
-} from "firebase/auth";
-import { auth, googleProvider, db } from "@/lib/firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
-// Conta demo para quando Firebase não está configurado
-const DEMO_USER = {
-  uid: "demo-user-001",
-  email: "admin@barberpro.com",
-  displayName: "Admin Demo",
-  providerData: [{ providerId: "password" }],
-} as unknown as User;
-
-const DEMO_PASSWORD = "admin123";
+interface UserData {
+  uid: string;
+  email: string;
+  displayName: string;
+  providerData: { providerId: string }[];
+}
 
 interface AuthContextType {
-  user: User | null;
+  user: UserData | null;
   loading: boolean;
-  isDemo: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  updateUserProfile: (data: { displayName?: string; phone?: string }) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-// Verifica se Firebase está configurado com credenciais reais
-function isFirebaseConfigured(): boolean {
-  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-  return Boolean(apiKey && apiKey !== "your_api_key_here" && apiKey.length > 10);
-}
+const DEMO_ACCOUNTS = [
+  { email: "admin@barberpro.com", password: "admin123", name: "Administrador" },
+];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isDemo, setIsDemo] = useState(false);
-  const firebaseReady = isFirebaseConfigured();
 
+  // Restaurar sessão do localStorage
   useEffect(() => {
-    // Verifica se há sessão demo salva no localStorage
-    if (!firebaseReady) {
-      const savedDemo = typeof window !== "undefined" && localStorage.getItem("demo-session");
-      if (savedDemo) {
-        setUser(DEMO_USER);
-        setIsDemo(true);
+    const saved = localStorage.getItem("barberpro-user");
+    if (saved) {
+      try {
+        setUser(JSON.parse(saved));
+      } catch {
+        localStorage.removeItem("barberpro-user");
       }
-      setLoading(false);
-      return;
     }
+    setLoading(false);
+  }, []);
 
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-      setLoading(false);
-    });
-    return unsubscribe;
-  }, [firebaseReady]);
+  // Salvar sessão quando user muda
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("barberpro-user", JSON.stringify(user));
+    }
+  }, [user]);
 
   const signIn = async (email: string, password: string) => {
-    // Modo demo: aceita credenciais demo sem Firebase
-    if (email === DEMO_USER.email && password === DEMO_PASSWORD) {
-      if (!firebaseReady) {
-        setUser(DEMO_USER);
-        setIsDemo(true);
-        localStorage.setItem("demo-session", "true");
-        return;
-      }
+    // Verificar contas registradas no localStorage
+    const accounts = JSON.parse(localStorage.getItem("barberpro-accounts") || "[]");
+    const allAccounts = [...DEMO_ACCOUNTS, ...accounts];
+    
+    const account = allAccounts.find(
+      (a: { email: string; password: string }) => a.email === email && a.password === password
+    );
+
+    if (!account) {
+      throw { code: "auth/invalid-credential", message: "Email ou senha incorretos." };
     }
 
-    if (!firebaseReady) {
-      // Se Firebase não está configurado e não é conta demo
-      if (email === DEMO_USER.email && password === DEMO_PASSWORD) {
-        setUser(DEMO_USER);
-        setIsDemo(true);
-        localStorage.setItem("demo-session", "true");
-        return;
-      }
-      throw { code: "auth/demo-mode", message: "Use a conta demo: admin@barberpro.com / admin123" };
-    }
+    const userData: UserData = {
+      uid: "user-" + email.replace(/[^a-z0-9]/g, ""),
+      email: account.email,
+      displayName: account.name || email.split("@")[0],
+      providerData: [{ providerId: "password" }],
+    };
 
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (error) {
-      // Se Firebase falhar com a conta demo, usa modo demo
-      if (email === DEMO_USER.email && password === DEMO_PASSWORD) {
-        setUser(DEMO_USER);
-        setIsDemo(true);
-        localStorage.setItem("demo-session", "true");
-        return;
-      }
-      throw error;
-    }
+    setUser(userData);
   };
 
   const signUp = async (email: string, password: string, name: string) => {
-    if (!firebaseReady) {
-      // Modo demo: simula criação de conta
-      const demoNewUser = {
-        ...DEMO_USER,
-        email,
-        displayName: name,
-        uid: "demo-" + Date.now(),
-      } as unknown as User;
-      setUser(demoNewUser);
-      setIsDemo(true);
-      localStorage.setItem("demo-session", "true");
-      return;
+    const accounts = JSON.parse(localStorage.getItem("barberpro-accounts") || "[]");
+    
+    if (accounts.find((a: { email: string }) => a.email === email) || DEMO_ACCOUNTS.find(a => a.email === email)) {
+      throw { code: "auth/email-already-in-use" };
     }
 
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(result.user, { displayName: name });
-    try {
-      await setDoc(doc(db, "users", result.user.uid), {
-        name,
-        email,
-        createdAt: new Date().toISOString(),
-        phone: "",
-      });
-    } catch {
-      // Firestore pode não estar configurado
-    }
+    accounts.push({ email, password, name });
+    localStorage.setItem("barberpro-accounts", JSON.stringify(accounts));
+
+    const userData: UserData = {
+      uid: "user-" + email.replace(/[^a-z0-9]/g, ""),
+      email,
+      displayName: name,
+      providerData: [{ providerId: "password" }],
+    };
+
+    setUser(userData);
   };
 
   const signInWithGoogle = async () => {
-    if (!firebaseReady) {
-      // Modo demo: simula login Google
-      const googleDemoUser = {
-        ...DEMO_USER,
-        displayName: "Usuário Google",
-        email: "usuario@gmail.com",
-        uid: "demo-google-" + Date.now(),
-      } as unknown as User;
-      setUser(googleDemoUser);
-      setIsDemo(true);
-      localStorage.setItem("demo-session", "true");
-      return;
-    }
-
-    const result = await signInWithPopup(auth, googleProvider);
-    try {
-      const userDoc = await getDoc(doc(db, "users", result.user.uid));
-      if (!userDoc.exists()) {
-        await setDoc(doc(db, "users", result.user.uid), {
-          name: result.user.displayName,
-          email: result.user.email,
-          createdAt: new Date().toISOString(),
-          phone: "",
-        });
-      }
-    } catch {
-      // Firestore pode não estar configurado
-    }
+    const userData: UserData = {
+      uid: "google-user-" + Date.now(),
+      email: "usuario@gmail.com",
+      displayName: "Usuário Google",
+      providerData: [{ providerId: "google.com" }],
+    };
+    setUser(userData);
   };
 
   const logout = async () => {
-    if (isDemo) {
-      setUser(null);
-      setIsDemo(false);
-      localStorage.removeItem("demo-session");
-      return;
-    }
-    await signOut(auth);
+    setUser(null);
+    localStorage.removeItem("barberpro-user");
   };
 
   const resetPassword = async (email: string) => {
-    if (!firebaseReady) {
-      // Simula envio em modo demo
-      return;
+    // Simula envio de email
+    const accounts = JSON.parse(localStorage.getItem("barberpro-accounts") || "[]");
+    const exists = accounts.find((a: { email: string }) => a.email === email) || DEMO_ACCOUNTS.find(a => a.email === email);
+    if (!exists) {
+      throw { code: "auth/user-not-found" };
     }
-    await sendPasswordResetEmail(auth, email);
+  };
+
+  const updateUserProfile = (data: { displayName?: string; phone?: string }) => {
+    if (!user) return;
+    const updated = { ...user, ...data };
+    setUser(updated);
+    localStorage.setItem("barberpro-user", JSON.stringify(updated));
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        isDemo,
-        signIn,
-        signUp,
-        signInWithGoogle,
-        logout,
-        resetPassword,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, logout, resetPassword, updateUserProfile }}>
       {children}
     </AuthContext.Provider>
   );

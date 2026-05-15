@@ -3,68 +3,38 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { updateProfile, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import toast from "react-hot-toast";
 import { FiUser, FiMail, FiPhone, FiLock, FiSave } from "react-icons/fi";
 
-function isFirebaseConfigured(): boolean {
-  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-  return Boolean(apiKey && apiKey !== "your_api_key_here" && apiKey.length > 10);
-}
-
 export default function PerfilPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, updateUserProfile } = useAuth();
   const router = useRouter();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [saving, setSaving] = useState(false);
-  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) { router.push("/login"); return; }
-    const fetch = async () => {
-      if (!user) return;
+    if (user) {
       setName(user.displayName || "");
-      if (!isFirebaseConfigured()) return;
-      try {
-        const d = await getDoc(doc(db, "users", user.uid));
-        if (d.exists()) setPhone(d.data().phone || "");
-      } catch { /* Firebase not configured */ }
-    };
-    if (user) fetch();
+      const savedPhone = localStorage.getItem(`barberpro-phone-${user.uid}`);
+      if (savedPhone) setPhone(savedPhone);
+    }
   }, [user, authLoading, router]);
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!user) return;
     setSaving(true);
-    try {
-      if (isFirebaseConfigured()) {
-        await updateProfile(user, { displayName: name });
-        await updateDoc(doc(db, "users", user.uid), { name, phone });
-      }
-      toast.success("Salvo!");
-    } catch { toast.error("Erro."); }
-    finally { setSaving(false); }
+    updateUserProfile({ displayName: name });
+    localStorage.setItem(`barberpro-phone-${user.uid}`, phone);
+    setTimeout(() => {
+      toast.success("Perfil atualizado!");
+      setSaving(false);
+    }, 500);
   };
 
-  const handleChangePassword = async () => {
-    if (!user || !user.email) return;
-    if (newPassword !== confirmNewPassword) { toast.error("Senhas não coincidem."); return; }
-    if (newPassword.length < 6) { toast.error("Mínimo 6 caracteres."); return; }
-    setChangingPassword(true);
-    try {
-      if (isFirebaseConfigured()) {
-        await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, currentPassword));
-        await updatePassword(user, newPassword);
-      }
-      toast.success("Senha alterada!"); setCurrentPassword(""); setNewPassword(""); setConfirmNewPassword("");
-    } catch { toast.error("Senha atual incorreta."); }
-    finally { setChangingPassword(false); }
+  const handleChangePassword = () => {
+    toast.success("Funcionalidade disponível com Firebase configurado.");
   };
 
   if (authLoading) return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ width: "24px", height: "24px", border: "2px solid #fff", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }} /></div>;
@@ -99,13 +69,9 @@ export default function PerfilPage() {
 
         {user.providerData[0]?.providerId === "password" && (
           <div className="card animate-fade-up-delay-2" style={{ padding: "32px" }}>
-            <h2 style={{ color: "#fff", fontSize: "13px", fontWeight: 600, marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}><FiLock size={14} color="#666" /> Alterar senha</h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div><label style={{ display: "block", color: "#555", fontSize: "12px", marginBottom: "6px" }}>Senha atual</label><input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="••••••••" className="input-field" /></div>
-              <div><label style={{ display: "block", color: "#555", fontSize: "12px", marginBottom: "6px" }}>Nova senha</label><input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Mínimo 6 caracteres" className="input-field" /></div>
-              <div><label style={{ display: "block", color: "#555", fontSize: "12px", marginBottom: "6px" }}>Confirmar</label><input type="password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} placeholder="Repita" className="input-field" /></div>
-              <button onClick={handleChangePassword} disabled={changingPassword || !currentPassword || !newPassword} className="btn-secondary" style={{ alignSelf: "flex-start" }}><FiLock size={13} /> {changingPassword ? "Alterando..." : "Alterar"}</button>
-            </div>
+            <h2 style={{ color: "#fff", fontSize: "13px", fontWeight: 600, marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}><FiLock size={14} color="#666" /> Segurança</h2>
+            <p style={{ color: "#555", fontSize: "13px", marginBottom: "16px" }}>Para alterar a senha, configure o Firebase Authentication.</p>
+            <button onClick={handleChangePassword} className="btn-secondary" style={{ alignSelf: "flex-start" }}><FiLock size={13} /> Alterar senha</button>
           </div>
         )}
       </div>

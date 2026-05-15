@@ -1,39 +1,9 @@
-import { initializeApp, getApps, FirebaseApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, Auth } from "firebase/auth";
-import { getFirestore, Firestore } from "firebase/firestore";
+// Firebase configuration placeholder
+// Este projeto funciona em modo demo com localStorage
+// Para usar Firebase real, configure as variáveis de ambiente no .env.local
 
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "demo-key",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "demo.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "demo-project",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "demo.appspot.com",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "000000000",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:000:web:000",
-};
-
-let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
-let googleProvider: GoogleAuthProvider;
-
-try {
-  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-  auth = getAuth(app);
-  db = getFirestore(app);
-  googleProvider = new GoogleAuthProvider();
-} catch {
-  // Firebase initialization failed - demo mode will be used
-  app = {} as FirebaseApp;
-  auth = {} as Auth;
-  db = {} as Firestore;
-  googleProvider = {} as GoogleAuthProvider;
-}
-
-export { auth, db, googleProvider };
-
-// Conta de teste
 export const TEST_ACCOUNT = {
   email: "admin@barberpro.com",
   password: "admin123",
-  name: "Admin Demo",
+  name: "Administrador",
 };

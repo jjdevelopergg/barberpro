@@ -3,17 +3,11 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import { db } from "@/lib/firebase";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { createAppointment, getBookedSlots } from "@/lib/appointments";
 import { format, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import toast from "react-hot-toast";
 import { FiCalendar, FiClock, FiCheck, FiArrowRight, FiArrowLeft, FiUser } from "react-icons/fi";
-
-function isFirebaseConfigured(): boolean {
-  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-  return Boolean(apiKey && apiKey !== "your_api_key_here" && apiKey.length > 10);
-}
 
 const services = [
   { id: "corte", name: "Corte de Cabelo", duration: "30 min", price: "R$ 45" },
@@ -48,37 +42,45 @@ export default function AgendarPage() {
 
   const availableDates = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i + 1)).filter((d) => d.getDay() !== 0);
 
-  useEffect(() => { if (!authLoading && !user) { toast.error("Faça login para agendar."); router.push("/login"); } }, [user, authLoading, router]);
+  useEffect(() => {
+    if (!authLoading && !user) {
+      toast.error("Faça login para agendar.");
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
 
   useEffect(() => {
-    const fetchSlots = async () => {
-      if (!selectedDate || !selectedBarber) return;
-      if (!isFirebaseConfigured()) { setBookedSlots([]); return; }
-      try {
-        const q = query(collection(db, "appointments"), where("date", "==", format(selectedDate, "yyyy-MM-dd")), where("barber", "==", selectedBarber));
-        const snap = await getDocs(q);
-        setBookedSlots(snap.docs.map((d) => d.data().time));
-      } catch { setBookedSlots([]); }
-    };
-    fetchSlots();
+    if (selectedDate && selectedBarber) {
+      const dateStr = format(selectedDate, "yyyy-MM-dd");
+      setBookedSlots(getBookedSlots(dateStr, selectedBarber));
+    }
   }, [selectedDate, selectedBarber]);
 
   const handleSubmit = async () => {
     if (!user || !selectedService || !selectedBarber || !selectedDate || !selectedTime) return;
     setSubmitting(true);
+
     try {
-      if (isFirebaseConfigured()) {
-        await addDoc(collection(db, "appointments"), {
-          userId: user.uid, userName: user.displayName || "Usuário", userEmail: user.email,
-          service: selectedService.name, servicePrice: selectedService.price, barber: selectedBarber,
-          date: format(selectedDate, "yyyy-MM-dd"), time: selectedTime,
-          dayOfWeek: format(selectedDate, "EEEE", { locale: ptBR }), status: "confirmado", createdAt: new Date().toISOString(),
-        });
-      }
+      createAppointment({
+        userId: user.uid,
+        userName: user.displayName,
+        userEmail: user.email,
+        service: selectedService.name,
+        servicePrice: selectedService.price,
+        serviceDuration: selectedService.duration,
+        barber: selectedBarber,
+        barberName: barbers.find((b) => b.id === selectedBarber)?.name || selectedBarber,
+        date: format(selectedDate, "yyyy-MM-dd"),
+        time: selectedTime,
+        dayOfWeek: format(selectedDate, "EEEE", { locale: ptBR }),
+      });
       toast.success("Agendamento confirmado!");
       router.push("/meus-agendamentos");
-    } catch { toast.error("Erro ao agendar."); }
-    finally { setSubmitting(false); }
+    } catch {
+      toast.error("Erro ao agendar.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (authLoading) return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ width: "24px", height: "24px", border: "2px solid #fff", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }} /></div>;
@@ -93,7 +95,7 @@ export default function AgendarPage() {
         </div>
 
         {/* Progress */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "48px", gap: "0" }} className="animate-fade-up-delay-1">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "48px" }} className="animate-fade-up-delay-1">
           {[1, 2, 3, 4].map((s) => (
             <div key={s} style={{ display: "flex", alignItems: "center" }}>
               <div style={{ width: "32px", height: "32px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 600, backgroundColor: step >= s ? "#fff" : "transparent", color: step >= s ? "#000" : "#333", border: step >= s ? "none" : "1px solid #222", transition: "all 0.3s" }}>
@@ -112,7 +114,7 @@ export default function AgendarPage() {
             </h2>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }} className="grid-responsive-2">
               {services.map((s) => (
-                <button key={s.id} onClick={() => setSelectedService(s)} style={{ padding: "18px", textAlign: "left", cursor: "pointer", backgroundColor: selectedService?.id === s.id ? "#0a0a0a" : "#0a0a0a", border: selectedService?.id === s.id ? "1px solid #fff" : "1px solid #1a1a1a", borderRadius: "12px", transition: "all 0.2s" }}>
+                <button key={s.id} onClick={() => setSelectedService(s)} style={{ padding: "18px", textAlign: "left", cursor: "pointer", backgroundColor: "#0a0a0a", border: selectedService?.id === s.id ? "1px solid #fff" : "1px solid #1a1a1a", borderRadius: "12px", transition: "all 0.2s" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
                       <div style={{ color: "#fff", fontWeight: 500, fontSize: "13px" }}>{s.name}</div>
@@ -222,6 +224,10 @@ export default function AgendarPage() {
                   <span style={{ color: "#fff", fontWeight: 500, fontSize: "13px", textTransform: "capitalize" }}>{item.value}</span>
                 </div>
               ))}
+            </div>
+
+            <div style={{ backgroundColor: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: "10px", padding: "14px 16px", marginTop: "16px" }}>
+              <p style={{ color: "#888", fontSize: "12px" }}>⚠️ Cancelamento permitido até 1 hora antes do horário agendado.</p>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "28px" }}>
