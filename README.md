@@ -1,24 +1,19 @@
-# Sistema de Agendamento — Barbearia
+# Barbearia — Sistema de Agendamento
 
-🔗 **Live:** [https://barbearia-nu-topaz.vercel.app](https://barbearia-nu-topaz.vercel.app)
+🔗 [barbearia-nu-topaz.vercel.app](https://barbearia-nu-topaz.vercel.app)
 
-Aplicação web completa de agendamento online para barbearias. Desenvolvida com Next.js, TypeScript e design minimalista.
-
-## Sobre
-
-Sistema que permite clientes agendarem serviços de barbearia online, com fluxo completo de autenticação, seleção de serviços, escolha de profissional, calendário de disponibilidade e gerenciamento de agendamentos.
+Sistema web de agendamento online para barbearias com autenticação, gerenciamento de horários e interface responsiva.
 
 ## Funcionalidades
 
-- Autenticação (login, cadastro, recuperação de senha)
+- Autenticação (login, cadastro, recuperação de senha, Google OAuth)
 - Agendamento em etapas (serviço → profissional → data/hora → confirmação)
 - Verificação de disponibilidade em tempo real
-- Gerenciamento de agendamentos (visualização, cancelamento)
-- Política de cancelamento (mínimo 1 hora de antecedência)
+- Gerenciamento e cancelamento de agendamentos (política de 1h mínima)
 - Perfil do usuário editável
-- Mapa de localização integrado
-- Design responsivo
 - Persistência de sessão
+- Mapa de localização integrado
+- Design responsivo e minimalista
 
 ## Tecnologias
 
@@ -26,16 +21,10 @@ Sistema que permite clientes agendarem serviços de barbearia online, com fluxo 
 - TypeScript
 - Tailwind CSS 4
 - date-fns
-- React Icons
 - React Hot Toast
-
-## Executar
-
-```bash
-npm install
-npm run dev
-```
+- React Icons
+- Vercel (deploy)
 
 ## Licença
 
-Consulte o arquivo [LICENSE](LICENSE).
+Projeto privado. Consulte o arquivo [LICENSE](LICENSE).
