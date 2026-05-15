@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { FiMenu, FiX, FiUser, FiLogOut, FiCalendar } from "react-icons/fi";
+import { FiMenu, FiX, FiUser, FiLogOut, FiCalendar, FiScissors } from "react-icons/fi";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -22,44 +22,30 @@ export default function Navbar() {
     <nav className="glass-nav">
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "72px" }}>
-          {/* Logo */}
           <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "10px" }}>
             <div style={{ width: "32px", height: "32px", backgroundColor: "#fff", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ color: "#000", fontWeight: 900, fontSize: "14px" }}>BP</span>
+              <FiScissors size={14} color="#000" />
             </div>
-            <span style={{ color: "#fff", fontWeight: 700, fontSize: "16px", letterSpacing: "-0.5px" }}>
-              BarberPro
-            </span>
           </Link>
 
-          {/* Desktop Nav */}
           <div className="hidden-mobile" style={{ display: "flex", alignItems: "center", gap: "36px" }}>
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                style={{ color: "#888", fontSize: "13px", fontWeight: 400, textDecoration: "none", transition: "color 0.2s", letterSpacing: "0.2px" }}
+              <Link key={link.href} href={link.href} style={{ color: "#888", fontSize: "13px", fontWeight: 400, textDecoration: "none", transition: "color 0.2s" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#888")}
-              >
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#888")}>
                 {link.label}
               </Link>
             ))}
           </div>
 
-          {/* Auth */}
           <div className="hidden-mobile" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             {user ? (
               <div style={{ position: "relative" }}>
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", color: "#999" }}
-                >
+                <button onClick={() => setShowUserMenu(!showUserMenu)} style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", color: "#999" }}>
                   <div style={{ width: "32px", height: "32px", backgroundColor: "#1a1a1a", border: "1px solid #222", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <FiUser size={13} color="#fff" />
                   </div>
                 </button>
-
                 {showUserMenu && (
                   <div style={{ position: "absolute", right: 0, marginTop: "8px", width: "200px", backgroundColor: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: "12px", overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.8)" }}>
                     <Link href="/meus-agendamentos" onClick={() => setShowUserMenu(false)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "14px 16px", fontSize: "13px", color: "#999", textDecoration: "none" }}
@@ -87,21 +73,19 @@ export default function Navbar() {
                   onMouseLeave={(e) => (e.currentTarget.style.color = "#888")}>
                   Entrar
                 </Link>
-                <Link href="/agendar" className="btn-primary" style={{ padding: "10px 20px", fontSize: "12px" }}>
+                <Link href="/agendar" className="btn-primary" style={{ padding: "10px 20px", fontSize: "12px", textDecoration: "none" }}>
                   Agendar
                 </Link>
               </>
             )}
           </div>
 
-          {/* Mobile */}
           <button className="hidden-desktop" onClick={() => setIsOpen(!isOpen)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", padding: "8px" }}>
             {isOpen ? <FiX size={20} /> : <FiMenu size={20} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isOpen && (
         <div className="hidden-desktop" style={{ backgroundColor: "#000", borderTop: "1px solid #111", padding: "24px" }}>
           {navLinks.map((link) => (

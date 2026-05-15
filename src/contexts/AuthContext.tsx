@@ -22,97 +22,72 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-const DEMO_ACCOUNTS = [
-  { email: "admin@barberpro.com", password: "admin123", name: "Administrador" },
-];
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Restaurar sessão do localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("barberpro-user");
+    const saved = localStorage.getItem("bp-session");
     if (saved) {
-      try {
-        setUser(JSON.parse(saved));
-      } catch {
-        localStorage.removeItem("barberpro-user");
-      }
+      try { setUser(JSON.parse(saved)); } catch { localStorage.removeItem("bp-session"); }
     }
     setLoading(false);
   }, []);
 
-  // Salvar sessão quando user muda
   useEffect(() => {
-    if (user) {
-      localStorage.setItem("barberpro-user", JSON.stringify(user));
-    }
+    if (user) localStorage.setItem("bp-session", JSON.stringify(user));
   }, [user]);
 
   const signIn = async (email: string, password: string) => {
-    // Verificar contas registradas no localStorage
-    const accounts = JSON.parse(localStorage.getItem("barberpro-accounts") || "[]");
-    const allAccounts = [...DEMO_ACCOUNTS, ...accounts];
-    
-    const account = allAccounts.find(
-      (a: { email: string; password: string }) => a.email === email && a.password === password
-    );
+    const accounts = JSON.parse(localStorage.getItem("bp-accounts") || "[]");
+    const account = accounts.find((a: { email: string; password: string }) => a.email === email && a.password === password);
 
     if (!account) {
-      throw { code: "auth/invalid-credential", message: "Email ou senha incorretos." };
+      throw { code: "auth/invalid-credential" };
     }
 
-    const userData: UserData = {
-      uid: "user-" + email.replace(/[^a-z0-9]/g, ""),
+    setUser({
+      uid: "u-" + email.replace(/[^a-z0-9]/g, ""),
       email: account.email,
       displayName: account.name || email.split("@")[0],
       providerData: [{ providerId: "password" }],
-    };
-
-    setUser(userData);
+    });
   };
 
   const signUp = async (email: string, password: string, name: string) => {
-    const accounts = JSON.parse(localStorage.getItem("barberpro-accounts") || "[]");
-    
-    if (accounts.find((a: { email: string }) => a.email === email) || DEMO_ACCOUNTS.find(a => a.email === email)) {
+    const accounts = JSON.parse(localStorage.getItem("bp-accounts") || "[]");
+    if (accounts.find((a: { email: string }) => a.email === email)) {
       throw { code: "auth/email-already-in-use" };
     }
 
     accounts.push({ email, password, name });
-    localStorage.setItem("barberpro-accounts", JSON.stringify(accounts));
+    localStorage.setItem("bp-accounts", JSON.stringify(accounts));
 
-    const userData: UserData = {
-      uid: "user-" + email.replace(/[^a-z0-9]/g, ""),
+    setUser({
+      uid: "u-" + email.replace(/[^a-z0-9]/g, ""),
       email,
       displayName: name,
       providerData: [{ providerId: "password" }],
-    };
-
-    setUser(userData);
+    });
   };
 
   const signInWithGoogle = async () => {
-    const userData: UserData = {
-      uid: "google-user-" + Date.now(),
+    setUser({
+      uid: "g-" + Date.now(),
       email: "usuario@gmail.com",
-      displayName: "Usuário Google",
+      displayName: "Usuário",
       providerData: [{ providerId: "google.com" }],
-    };
-    setUser(userData);
+    });
   };
 
   const logout = async () => {
     setUser(null);
-    localStorage.removeItem("barberpro-user");
+    localStorage.removeItem("bp-session");
   };
 
   const resetPassword = async (email: string) => {
-    // Simula envio de email
-    const accounts = JSON.parse(localStorage.getItem("barberpro-accounts") || "[]");
-    const exists = accounts.find((a: { email: string }) => a.email === email) || DEMO_ACCOUNTS.find(a => a.email === email);
-    if (!exists) {
+    const accounts = JSON.parse(localStorage.getItem("bp-accounts") || "[]");
+    if (!accounts.find((a: { email: string }) => a.email === email)) {
       throw { code: "auth/user-not-found" };
     }
   };
@@ -121,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return;
     const updated = { ...user, ...data };
     setUser(updated);
-    localStorage.setItem("barberpro-user", JSON.stringify(updated));
+    localStorage.setItem("bp-session", JSON.stringify(updated));
   };
 
   return (

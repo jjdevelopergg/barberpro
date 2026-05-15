@@ -1,26 +1,39 @@
-LICENÇA DE USO RESTRITO
+LICENÇA PROPRIETÁRIA — USO RESTRITO
 
-Copyright (c) 2024 BarberPro. Todos os direitos reservados.
+Copyright (c) 2024. Todos os direitos reservados.
 
-Este software é disponibilizado exclusivamente para fins de portfólio,
-demonstração acadêmica e aprendizado pessoal.
+TERMOS E CONDIÇÕES:
 
-PERMISSÕES:
-- Visualizar o código-fonte
-- Clonar o repositório para estudo pessoal
-- Utilizar como referência para projetos próprios
+1. PROPRIEDADE
+   Este software, incluindo todo o código-fonte, design, estrutura e
+   documentação, é propriedade exclusiva do autor. Nenhuma parte deste
+   projeto pode ser considerada de domínio público.
 
-RESTRIÇÕES:
-- NÃO é permitido o uso comercial sem autorização prévia por escrito
-- NÃO é permitido redistribuir como produto próprio
-- NÃO é permitido vender, sublicenciar ou lucrar com este código
-- NÃO é permitido remover esta licença ou avisos de copyright
+2. PERMISSÕES LIMITADAS
+   É permitido apenas:
+   - Visualizar o código-fonte para fins de avaliação
+   - Clonar o repositório para análise técnica pessoal
 
-Para solicitar permissão de uso comercial, entre em contato com o autor.
+3. PROIBIÇÕES
+   É expressamente proibido, sem autorização prévia por escrito:
+   - Utilizar este software para fins comerciais
+   - Copiar, modificar ou criar trabalhos derivados
+   - Distribuir, sublicenciar, vender ou transferir
+   - Utilizar o design, layout ou estrutura em outros projetos
+   - Remover ou alterar avisos de propriedade
+   - Hospedar publicamente cópias deste software
+   - Utilizar para treinamento de modelos de IA
 
-O SOFTWARE É FORNECIDO "COMO ESTÁ", SEM GARANTIA DE QUALQUER TIPO,
-EXPRESSA OU IMPLÍCITA. EM NENHUM CASO O AUTOR SERÁ RESPONSÁVEL POR
-QUALQUER RECLAMAÇÃO, DANO OU OUTRA RESPONSABILIDADE.
+4. PORTFÓLIO
+   Este projeto é disponibilizado exclusivamente como demonstração de
+   habilidades técnicas para fins de portfólio profissional.
 
-Projeto apenas para fins de portfólio e demonstração.
-Não autorizado para uso comercial sem permissão.
+5. VIOLAÇÕES
+   Qualquer uso não autorizado constitui violação de direitos autorais
+   e poderá resultar em medidas legais cabíveis.
+
+6. ISENÇÃO DE GARANTIA
+   O software é fornecido "como está", sem garantias de qualquer tipo.
+   O autor não se responsabiliza por danos decorrentes do uso.
+
+Para solicitar permissão de uso, entre em contato com o autor.

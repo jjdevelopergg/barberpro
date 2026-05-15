@@ -6,8 +6,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "BarberPro | Barbearia Premium",
-  description: "A melhor experiência em barbearia. Agende seu horário online.",
+  title: "Barbearia | Agendamento Online",
+  description: "Sistema de agendamento online para barbearias.",
 };
 
 export default function RootLayout({
@@ -17,20 +17,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body style={{ backgroundColor: "#0a0a0a", color: "#ffffff", fontFamily: "Inter, system-ui, -apple-system, sans-serif", minHeight: "100vh" }}>
+      <body style={{ backgroundColor: "#000", color: "#fff", fontFamily: "Inter, system-ui, -apple-system, sans-serif", minHeight: "100vh" }}>
         <AuthProvider>
           <Toaster
             position="top-right"
             toastOptions={{
-              style: {
-                background: "#1a1a1a",
-                color: "#fff",
-                border: "1px solid #333",
-                fontSize: "13px",
-              },
-              success: {
-                iconTheme: { primary: "#22c55e", secondary: "#fff" },
-              },
+              style: { background: "#111", color: "#fff", border: "1px solid #1a1a1a", fontSize: "13px" },
+              success: { iconTheme: { primary: "#fff", secondary: "#000" } },
             }}
           />
           <Navbar />
