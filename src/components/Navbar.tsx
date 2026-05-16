@@ -23,7 +23,7 @@ export default function Navbar() {
       {/* Banner de demonstração */}
       <div style={{ backgroundColor: "#0a0a0a", borderBottom: "1px solid #1a1a1a", padding: "12px 24px", textAlign: "center" }}>
         <p style={{ color: "#888", fontSize: "12px", lineHeight: "1.5" }}>
-          🚀 Projeto de <strong style={{ color: "#ddd" }}>portfólio</strong> — apenas para demonstração. Quer um site profissional para o seu negócio?{" "}
+          Projeto de <strong style={{ color: "#ddd" }}>portfólio</strong> — apenas para demonstração. Quer um site profissional para o seu negócio?{" "}
           <a href="https://github.com/jjdevelopergg" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 600, textDecoration: "none", borderBottom: "1px solid #555" }}>Fale comigo →</a>
         </p>
       </div>
