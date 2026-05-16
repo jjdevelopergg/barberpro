@@ -48,10 +48,10 @@ export default function AgendarPage() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const dates: Date[] = [];
-    for (let i = 0; i < 21; i++) {
+    for (let i = 0; i < 30; i++) {
       const d = new Date(today);
       d.setDate(today.getDate() + i);
-      if (d.getDay() !== 0) { // Pula domingos
+      if (d.getDay() !== 0 && d.getDay() !== 6) { // Pula sábado e domingo
         dates.push(d);
       }
     }
@@ -259,9 +259,14 @@ export default function AgendarPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "6px", marginBottom: "16px" }} className="grid-responsive-2">
                   {timeSlots.filter(t => parseInt(t) < 13).map((time) => {
                     const booked = bookedSlots.includes(time);
+                    const now = new Date();
+                    const isToday = selectedDate?.toDateString() === now.toDateString();
+                    const [h, m] = time.split(":").map(Number);
+                    const isPast = isToday && (h < now.getHours() || (h === now.getHours() && m <= now.getMinutes()));
+                    const disabled = booked || isPast;
                     return (
-                      <button key={time} onClick={() => !booked && setSelectedTime(time)} disabled={booked}
-                        style={{ padding: "11px 0", borderRadius: "8px", fontSize: "12px", fontWeight: 500, cursor: booked ? "not-allowed" : "pointer", textDecoration: booked ? "line-through" : "none", backgroundColor: selectedTime === time ? "#fff" : "#0a0a0a", border: selectedTime === time ? "1px solid #fff" : "1px solid #1a1a1a", color: booked ? "#333" : selectedTime === time ? "#000" : "#aaa", transition: "all 0.2s" }}>
+                      <button key={time} onClick={() => !disabled && setSelectedTime(time)} disabled={disabled}
+                        style={{ padding: "11px 0", borderRadius: "8px", fontSize: "12px", fontWeight: 500, cursor: disabled ? "not-allowed" : "pointer", textDecoration: disabled ? "line-through" : "none", backgroundColor: selectedTime === time ? "#fff" : "#0a0a0a", border: selectedTime === time ? "1px solid #fff" : "1px solid #1a1a1a", color: disabled ? "#333" : selectedTime === time ? "#000" : "#aaa", opacity: disabled ? 0.4 : 1, transition: "all 0.2s" }}>
                         {time}
                       </button>
                     );
@@ -272,9 +277,14 @@ export default function AgendarPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "6px" }} className="grid-responsive-2">
                   {timeSlots.filter(t => parseInt(t) >= 13).map((time) => {
                     const booked = bookedSlots.includes(time);
+                    const now = new Date();
+                    const isToday = selectedDate?.toDateString() === now.toDateString();
+                    const [h, m] = time.split(":").map(Number);
+                    const isPast = isToday && (h < now.getHours() || (h === now.getHours() && m <= now.getMinutes()));
+                    const disabled = booked || isPast;
                     return (
-                      <button key={time} onClick={() => !booked && setSelectedTime(time)} disabled={booked}
-                        style={{ padding: "11px 0", borderRadius: "8px", fontSize: "12px", fontWeight: 500, cursor: booked ? "not-allowed" : "pointer", textDecoration: booked ? "line-through" : "none", backgroundColor: selectedTime === time ? "#fff" : "#0a0a0a", border: selectedTime === time ? "1px solid #fff" : "1px solid #1a1a1a", color: booked ? "#333" : selectedTime === time ? "#000" : "#aaa", transition: "all 0.2s" }}>
+                      <button key={time} onClick={() => !disabled && setSelectedTime(time)} disabled={disabled}
+                        style={{ padding: "11px 0", borderRadius: "8px", fontSize: "12px", fontWeight: 500, cursor: disabled ? "not-allowed" : "pointer", textDecoration: disabled ? "line-through" : "none", backgroundColor: selectedTime === time ? "#fff" : "#0a0a0a", border: selectedTime === time ? "1px solid #fff" : "1px solid #1a1a1a", color: disabled ? "#333" : selectedTime === time ? "#000" : "#aaa", opacity: disabled ? 0.4 : 1, transition: "all 0.2s" }}>
                         {time}
                       </button>
                     );
