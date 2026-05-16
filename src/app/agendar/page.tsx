@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { createAppointment, getBookedSlots } from "@/lib/appointments";
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import toast from "react-hot-toast";
 import { FiCalendar, FiClock, FiCheck, FiArrowRight, FiArrowLeft, FiUser, FiInfo, FiX } from "react-icons/fi";
@@ -41,7 +41,22 @@ export default function AgendarPage() {
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
-  const availableDates = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i)).filter((d) => d.getDay() !== 0);
+  // Gera datas no cliente para usar timezone local
+  const [availableDates, setAvailableDates] = useState<Date[]>([]);
+  
+  useEffect(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dates: Date[] = [];
+    for (let i = 0; i < 21; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      if (d.getDay() !== 0) { // Pula domingos
+        dates.push(d);
+      }
+    }
+    setAvailableDates(dates);
+  }, []);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -214,7 +229,8 @@ export default function AgendarPage() {
             <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "12px" }}>
               {availableDates.map((date, i) => {
                 const isSelected = selectedDate?.toDateString() === date.toDateString();
-                const isToday = date.toDateString() === new Date().toDateString();
+                const now = new Date();
+                const isToday = date.toDateString() === now.toDateString();
                 const prevDate = i > 0 ? availableDates[i - 1] : null;
                 const showMonthDivider = prevDate && prevDate.getMonth() !== date.getMonth();
 
@@ -224,11 +240,11 @@ export default function AgendarPage() {
                       <div style={{ width: "1px", height: "40px", backgroundColor: "#222", margin: "0 6px", flexShrink: 0 }} />
                     )}
                     <button onClick={() => { setSelectedDate(date); setSelectedTime(""); }}
-                      style={{ flexShrink: 0, width: "72px", padding: "14px 0", borderRadius: "12px", textAlign: "center", cursor: "pointer", backgroundColor: isSelected ? "#fff" : "#0a0a0a", border: isSelected ? "1px solid #fff" : "1px solid #1a1a1a", transition: "all 0.2s" }}>
+                      style={{ flexShrink: 0, width: "72px", padding: "14px 0", borderRadius: "12px", textAlign: "center", cursor: "pointer", backgroundColor: isSelected ? "#fff" : "#0a0a0a", border: isSelected ? "1px solid #fff" : isToday ? "1px solid #444" : "1px solid #1a1a1a", transition: "all 0.2s" }}>
                       <div style={{ fontSize: "9px", color: isSelected ? "#000" : "#666", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.5px" }}>{format(date, "EEEE", { locale: ptBR }).slice(0, 3)}</div>
                       <div style={{ fontSize: "18px", fontWeight: 700, color: isSelected ? "#000" : "#fff", marginTop: "4px" }}>{format(date, "dd")}</div>
                       <div style={{ fontSize: "9px", color: isSelected ? "#333" : "#444", marginTop: "2px", textTransform: "capitalize" }}>{format(date, "MMM", { locale: ptBR })}</div>
-                      {isToday && <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: isSelected ? "#000" : "#fff", margin: "4px auto 0" }} />}
+                      {isToday && <div style={{ fontSize: "8px", color: isSelected ? "#000" : "#888", marginTop: "4px", fontWeight: 600 }}>HOJE</div>}
                     </button>
                   </div>
                 );
