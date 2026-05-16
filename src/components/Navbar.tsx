@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { FiMenu, FiX, FiUser, FiLogOut, FiCalendar, FiScissors } from "react-icons/fi";
+import { FiMenu, FiX, FiUser, FiLogOut, FiCalendar } from "react-icons/fi";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -24,7 +24,7 @@ export default function Navbar() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "72px" }}>
           <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "10px" }}>
             <div style={{ width: "32px", height: "32px", backgroundColor: "#fff", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <FiScissors size={14} color="#000" />
+              <span style={{ color: "#000", fontWeight: 900, fontSize: "11px" }}>BP</span>
             </div>
           </Link>
 

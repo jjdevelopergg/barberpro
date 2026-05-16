@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { FiScissors } from "react-icons/fi";
 
 export default function Footer() {
   return (
@@ -11,7 +10,7 @@ export default function Footer() {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
               <div style={{ width: "28px", height: "28px", backgroundColor: "#fff", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <FiScissors size={12} color="#000" />
+                <span style={{ color: "#000", fontWeight: 900, fontSize: "9px" }}>BP</span>
               </div>
             </div>
             <p style={{ color: "#333", fontSize: "12px", maxWidth: "280px", lineHeight: "1.6" }}>
