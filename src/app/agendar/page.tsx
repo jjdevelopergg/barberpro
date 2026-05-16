@@ -333,9 +333,14 @@ export default function AgendarPage() {
                 <circle cx="12" cy="12" r="10"/>
                 <polyline points="12 6 12 12 16 14"/>
               </svg>
-              <p style={{ color: "#888", fontSize: "12px", lineHeight: "1.5" }}>
-                Cancelamentos devem ser realizados com no mínimo <strong style={{ color: "#ccc" }}>1 hora</strong> de antecedência ao horário agendado.
-              </p>
+              <div>
+                <p style={{ color: "#888", fontSize: "12px", lineHeight: "1.5" }}>
+                  Cancelamentos devem ser realizados com no mínimo <strong style={{ color: "#ccc" }}>1 hora</strong> de antecedência ao horário agendado.
+                </p>
+                <p style={{ color: "#666", fontSize: "11px", marginTop: "4px" }}>
+                  Tolerância máxima de <strong style={{ color: "#aaa" }}>15 minutos</strong> de atraso mediante justificativa. Após esse período, o horário será liberado.
+                </p>
+              </div>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "28px" }}>
