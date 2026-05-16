@@ -22,10 +22,8 @@ export default function Navbar() {
     <nav className="glass-nav">
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "72px" }}>
-          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{ width: "32px", height: "32px", backgroundColor: "#fff", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ color: "#000", fontWeight: 900, fontSize: "11px" }}>BP</span>
-            </div>
+          <Link href="/" style={{ textDecoration: "none" }}>
+            <span style={{ color: "#fff", fontWeight: 300, fontSize: "14px", letterSpacing: "2px" }}></span>
           </Link>
 
           <div className="hidden-mobile" style={{ display: "flex", alignItems: "center", gap: "36px" }}>

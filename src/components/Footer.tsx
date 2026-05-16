@@ -8,11 +8,7 @@ export default function Footer() {
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "32px" }}>
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-              <div style={{ width: "28px", height: "28px", backgroundColor: "#fff", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ color: "#000", fontWeight: 900, fontSize: "9px" }}>BP</span>
-              </div>
-            </div>
+            <div style={{ marginBottom: "12px" }}></div>
             <p style={{ color: "#333", fontSize: "12px", maxWidth: "280px", lineHeight: "1.6" }}>
               Sistema de agendamento online para barbearias.
             </p>
