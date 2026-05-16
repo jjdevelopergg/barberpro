@@ -15,16 +15,7 @@ export default function Home() {
       {/* Hero */}
       <section style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden", textAlign: "center" }}>
         <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=1920&q=80"
-            style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.35 }}
-          >
-            <source src="https://cdn.pixabay.com/video/2020/07/30/45894-446612498_large.mp4" type="video/mp4" />
-          </video>
+          <img src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=1920&q=80" alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.35 }} />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.85) 100%)" }} />
         </div>
 
