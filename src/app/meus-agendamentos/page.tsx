@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { getAppointmentsByUser, cancelAppointment, isUpcoming, getTimeUntilAppointment, Appointment } from "@/lib/appointments";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
-import { FiCalendar, FiClock, FiTrash2, FiUser, FiAlertCircle } from "react-icons/fi";
+import { FiCalendar, FiClock, FiTrash2, FiUser, FiAlertCircle, FiMapPin } from "react-icons/fi";
 import Link from "next/link";
 
 export default function MeusAgendamentosPage() {
@@ -87,22 +87,31 @@ export default function MeusAgendamentosPage() {
                             <div style={{ display: "flex", gap: "16px", marginTop: "10px", flexWrap: "wrap" }}>
                               <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#555", fontSize: "12px" }}><FiCalendar size={11} /> {format(new Date(apt.date + "T12:00:00"), "dd/MM/yyyy")} • <span style={{ textTransform: "capitalize" }}>{apt.dayOfWeek}</span></span>
                               <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#555", fontSize: "12px" }}><FiClock size={11} /> {apt.time}</span>
-                              <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#555", fontSize: "12px" }}><FiUser size={11} /> {apt.barberName}</span>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "10px" }}>
+                              <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#aaa", fontSize: "12px", fontWeight: 500 }}><FiUser size={11} /> {apt.barberName}</span>
                             </div>
                           </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            <span style={{ color: "#888", fontWeight: 600, fontSize: "13px" }}>{apt.servicePrice}</span>
-                            {canCancel ? (
-                              <button onClick={() => handleCancel(apt.id, apt.date, apt.time)} style={{ background: "none", border: "1px solid #1a1a1a", color: "#555", cursor: "pointer", padding: "6px 10px", borderRadius: "6px", display: "flex", alignItems: "center", gap: "4px", fontSize: "11px", transition: "all 0.2s" }}
-                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#ef4444"; e.currentTarget.style.color = "#ef4444"; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1a1a1a"; e.currentTarget.style.color = "#555"; }}>
-                                <FiTrash2 size={12} /> Cancelar
-                              </button>
-                            ) : (
-                              <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#666", fontSize: "11px" }}>
-                                <FiAlertCircle size={11} /> &lt;1h
-                              </span>
-                            )}
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                              <span style={{ color: "#888", fontWeight: 600, fontSize: "13px" }}>{apt.servicePrice}</span>
+                              {canCancel ? (
+                                <button onClick={() => handleCancel(apt.id, apt.date, apt.time)} style={{ background: "none", border: "1px solid #1a1a1a", color: "#555", cursor: "pointer", padding: "6px 10px", borderRadius: "6px", display: "flex", alignItems: "center", gap: "4px", fontSize: "11px", transition: "all 0.2s" }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#ef4444"; e.currentTarget.style.color = "#ef4444"; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1a1a1a"; e.currentTarget.style.color = "#555"; }}>
+                                  <FiTrash2 size={12} /> Cancelar
+                                </button>
+                              ) : (
+                                <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#666", fontSize: "11px" }}>
+                                  <FiAlertCircle size={11} /> &lt;1h
+                                </span>
+                              )}
+                            </div>
+                            <a href="https://www.google.com/maps/search/barbearia" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: "4px", color: "#555", fontSize: "11px", textDecoration: "none", border: "1px solid #1a1a1a", padding: "5px 10px", borderRadius: "6px", transition: "all 0.2s" }}
+                              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#444"; e.currentTarget.style.color = "#fff"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1a1a1a"; e.currentTarget.style.color = "#555"; }}>
+                              <FiMapPin size={11} /> Ver no mapa
+                            </a>
                           </div>
                         </div>
                       </div>
