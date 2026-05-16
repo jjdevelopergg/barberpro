@@ -208,27 +208,57 @@ export default function AgendarPage() {
               <span style={{ color: "#444" }}>03</span> Data e horário
             </h2>
 
-            <p style={{ color: "#444", fontSize: "11px", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "12px" }}>Dia</p>
+            <p style={{ color: "#888", fontSize: "11px", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "12px" }}>
+              {selectedDate ? format(selectedDate, "MMMM yyyy", { locale: ptBR }) : format(new Date(), "MMMM yyyy", { locale: ptBR })}
+            </p>
             <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "12px" }}>
-              {availableDates.map((date) => (
-                <button key={date.toISOString()} onClick={() => { setSelectedDate(date); setSelectedTime(""); }}
-                  style={{ flexShrink: 0, width: "64px", padding: "14px 0", borderRadius: "10px", textAlign: "center", cursor: "pointer", backgroundColor: "#0a0a0a", border: selectedDate?.toDateString() === date.toDateString() ? "1px solid #fff" : "1px solid #1a1a1a", transition: "all 0.2s" }}>
-                  <div style={{ fontSize: "10px", color: "#444", textTransform: "uppercase" }}>{format(date, "EEE", { locale: ptBR })}</div>
-                  <div style={{ fontSize: "16px", fontWeight: 700, color: "#fff", marginTop: "2px" }}>{format(date, "dd")}</div>
-                  <div style={{ fontSize: "10px", color: "#333" }}>{format(date, "MMM", { locale: ptBR })}</div>
-                </button>
-              ))}
+              {availableDates.map((date, i) => {
+                const isSelected = selectedDate?.toDateString() === date.toDateString();
+                const isToday = date.toDateString() === new Date().toDateString();
+                const prevDate = i > 0 ? availableDates[i - 1] : null;
+                const showMonthDivider = prevDate && prevDate.getMonth() !== date.getMonth();
+
+                return (
+                  <div key={date.toISOString()} style={{ display: "flex", alignItems: "center" }}>
+                    {showMonthDivider && (
+                      <div style={{ width: "1px", height: "40px", backgroundColor: "#222", margin: "0 6px", flexShrink: 0 }} />
+                    )}
+                    <button onClick={() => { setSelectedDate(date); setSelectedTime(""); }}
+                      style={{ flexShrink: 0, width: "72px", padding: "14px 0", borderRadius: "12px", textAlign: "center", cursor: "pointer", backgroundColor: isSelected ? "#fff" : "#0a0a0a", border: isSelected ? "1px solid #fff" : "1px solid #1a1a1a", transition: "all 0.2s" }}>
+                      <div style={{ fontSize: "9px", color: isSelected ? "#000" : "#666", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.5px" }}>{format(date, "EEEE", { locale: ptBR }).slice(0, 3)}</div>
+                      <div style={{ fontSize: "18px", fontWeight: 700, color: isSelected ? "#000" : "#fff", marginTop: "4px" }}>{format(date, "dd")}</div>
+                      <div style={{ fontSize: "9px", color: isSelected ? "#333" : "#444", marginTop: "2px", textTransform: "capitalize" }}>{format(date, "MMM", { locale: ptBR })}</div>
+                      {isToday && <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: isSelected ? "#000" : "#fff", margin: "4px auto 0" }} />}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
 
             {selectedDate && (
               <div style={{ marginTop: "28px" }}>
-                <p style={{ color: "#444", fontSize: "11px", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "12px", display: "flex", alignItems: "center", gap: "6px" }}><FiClock size={11} /> Horário</p>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "6px" }} className="grid-responsive-2">
-                  {timeSlots.map((time) => {
+                <p style={{ color: "#888", fontSize: "11px", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "16px", display: "flex", alignItems: "center", gap: "6px" }}><FiClock size={11} /> Horário disponível</p>
+                
+                <p style={{ color: "#555", fontSize: "10px", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Manhã</p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "6px", marginBottom: "16px" }} className="grid-responsive-2">
+                  {timeSlots.filter(t => parseInt(t) < 13).map((time) => {
                     const booked = bookedSlots.includes(time);
                     return (
                       <button key={time} onClick={() => !booked && setSelectedTime(time)} disabled={booked}
-                        style={{ padding: "11px 0", borderRadius: "8px", fontSize: "12px", fontWeight: 500, cursor: booked ? "not-allowed" : "pointer", textDecoration: booked ? "line-through" : "none", backgroundColor: "#0a0a0a", border: selectedTime === time ? "1px solid #fff" : "1px solid #1a1a1a", color: booked ? "#222" : selectedTime === time ? "#fff" : "#666", transition: "all 0.2s" }}>
+                        style={{ padding: "11px 0", borderRadius: "8px", fontSize: "12px", fontWeight: 500, cursor: booked ? "not-allowed" : "pointer", textDecoration: booked ? "line-through" : "none", backgroundColor: selectedTime === time ? "#fff" : "#0a0a0a", border: selectedTime === time ? "1px solid #fff" : "1px solid #1a1a1a", color: booked ? "#333" : selectedTime === time ? "#000" : "#aaa", transition: "all 0.2s" }}>
+                        {time}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <p style={{ color: "#555", fontSize: "10px", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Tarde</p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "6px" }} className="grid-responsive-2">
+                  {timeSlots.filter(t => parseInt(t) >= 13).map((time) => {
+                    const booked = bookedSlots.includes(time);
+                    return (
+                      <button key={time} onClick={() => !booked && setSelectedTime(time)} disabled={booked}
+                        style={{ padding: "11px 0", borderRadius: "8px", fontSize: "12px", fontWeight: 500, cursor: booked ? "not-allowed" : "pointer", textDecoration: booked ? "line-through" : "none", backgroundColor: selectedTime === time ? "#fff" : "#0a0a0a", border: selectedTime === time ? "1px solid #fff" : "1px solid #1a1a1a", color: booked ? "#333" : selectedTime === time ? "#000" : "#aaa", transition: "all 0.2s" }}>
                         {time}
                       </button>
                     );
