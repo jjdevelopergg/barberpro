@@ -21,10 +21,10 @@ export default function Navbar() {
   return (
     <nav className="glass-nav">
       {/* Banner de demonstração */}
-      <div style={{ backgroundColor: "#111", borderBottom: "1px solid #1a1a1a", padding: "10px 24px", textAlign: "center" }}>
-        <p style={{ color: "#999", fontSize: "12px", lineHeight: "1.5" }}>
-          Este projeto é apenas para <strong style={{ color: "#fff" }}>demonstração e portfólio</strong> — sem valor comercial. Deseja um site assim para seu estabelecimento?{" "}
-          <a href="https://github.com/jjdevelopergg" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", textDecoration: "underline" }}>Entre em contato</a>
+      <div style={{ backgroundColor: "#0a0a0a", borderBottom: "1px solid #1a1a1a", padding: "12px 24px", textAlign: "center" }}>
+        <p style={{ color: "#888", fontSize: "12px", lineHeight: "1.5" }}>
+          🚀 Projeto de <strong style={{ color: "#ddd" }}>portfólio</strong> — apenas para demonstração. Quer um site profissional para o seu negócio?{" "}
+          <a href="https://github.com/jjdevelopergg" target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: 600, textDecoration: "none", borderBottom: "1px solid #555" }}>Fale comigo →</a>
         </p>
       </div>
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
