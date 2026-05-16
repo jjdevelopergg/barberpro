@@ -23,8 +23,13 @@ export default function LoginPage() {
       await signIn(email, password);
       toast.success("Login realizado!");
       router.push("/agendar");
-    } catch {
-      toast.error("Email ou senha incorretos.");
+    } catch (error: unknown) {
+      const err = error as { code?: string; message?: string };
+      if (err.code === "auth/too-many-requests") {
+        toast.error(err.message || "Muitas tentativas. Aguarde.");
+      } else {
+        toast.error("Email ou senha incorretos.");
+      }
     } finally {
       setLoading(false);
     }
