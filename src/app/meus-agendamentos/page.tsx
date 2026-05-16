@@ -9,6 +9,13 @@ import toast from "react-hot-toast";
 import { FiCalendar, FiClock, FiTrash2, FiUser, FiAlertCircle, FiMapPin } from "react-icons/fi";
 import Link from "next/link";
 
+const barberData: Record<string, { name: string; image: string }> = {
+  "profissional-1": { name: "Carlos Silva", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=80&fit=crop&crop=face" },
+  "profissional-2": { name: "Rafael Santos", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&q=80&fit=crop&crop=face" },
+  "profissional-3": { name: "Lucas Oliveira", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&q=80&fit=crop&crop=face" },
+  "profissional-4": { name: "Pedro Costa", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&q=80&fit=crop&crop=face" },
+};
+
 export default function MeusAgendamentosPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -89,7 +96,8 @@ export default function MeusAgendamentosPage() {
                               <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#555", fontSize: "12px" }}><FiClock size={11} /> {apt.time}</span>
                             </div>
                             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "10px" }}>
-                              <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#aaa", fontSize: "12px", fontWeight: 500 }}><FiUser size={11} /> {apt.barberName}</span>
+                              <img src={barberData[apt.barber]?.image || ""} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", objectFit: "cover", border: "1px solid #222" }} />
+                              <span style={{ color: "#ccc", fontSize: "12px", fontWeight: 500 }}>{barberData[apt.barber]?.name || apt.barberName}</span>
                             </div>
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
