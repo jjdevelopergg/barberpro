@@ -34,7 +34,7 @@ export default function Footer() {
         </div>
 
         <div style={{ marginTop: "40px", paddingTop: "20px", borderTop: "1px solid #0a0a0a" }}>
-          <p style={{ color: "#222", fontSize: "11px" }}>Todos os direitos reservados.</p>
+          <p style={{ color: "#333", fontSize: "11px" }}>© João Pedro. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

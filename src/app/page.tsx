@@ -15,8 +15,16 @@ export default function Home() {
       {/* Hero */}
       <section style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden", textAlign: "center" }}>
         <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-          <img src="https://images.unsplash.com/photo-1585747860036-4cb4e2e43a35?w=1920&q=80" alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.2 }} />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.9) 100%)" }} />
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.25 }}
+          >
+            <source src="https://videos.pexels.com/video-files/7697810/7697810-uhd_2560_1440_30fps.mp4" type="video/mp4" />
+          </video>
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.85) 100%)" }} />
         </div>
 
         <div style={{ maxWidth: "800px", margin: "0 auto", padding: "140px 24px 100px", position: "relative", zIndex: 1 }}>
