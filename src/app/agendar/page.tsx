@@ -298,8 +298,14 @@ export default function AgendarPage() {
               ))}
             </div>
 
-            <div style={{ backgroundColor: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: "10px", padding: "14px 16px", marginTop: "16px" }}>
-              <p style={{ color: "#888", fontSize: "12px" }}>⚠️ Cancelamento permitido até 1 hora antes do horário agendado.</p>
+            <div style={{ backgroundColor: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: "12px", padding: "16px 20px", marginTop: "16px", display: "flex", alignItems: "center", gap: "12px" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <p style={{ color: "#888", fontSize: "12px", lineHeight: "1.5" }}>
+                Cancelamentos devem ser realizados com no mínimo <strong style={{ color: "#ccc" }}>1 hora</strong> de antecedência ao horário agendado.
+              </p>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "28px" }}>
