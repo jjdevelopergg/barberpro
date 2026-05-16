@@ -53,13 +53,11 @@ export default function Navbar() {
                 </button>
                 {showUserMenu && (
                   <div style={{ position: "absolute", right: 0, marginTop: "8px", width: "200px", backgroundColor: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: "12px", overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.8)" }}>
-                    {isAdmin && (
-                      <Link href="/admin" onClick={() => setShowUserMenu(false)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "14px 16px", fontSize: "13px", color: "#fff", textDecoration: "none", backgroundColor: "#111", borderBottom: "1px solid #1a1a1a" }}
+                    <Link href="/admin" onClick={() => setShowUserMenu(false)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "14px 16px", fontSize: "13px", color: "#fff", fontWeight: 600, textDecoration: "none", backgroundColor: "#111", borderBottom: "1px solid #1a1a1a" }}
                         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1a1a1a")}
                         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#111")}>
-                        <FiCalendar size={14} /> Painel Admin
+                        <FiCalendar size={14} /> Dashboard
                       </Link>
-                    )}
                     <Link href="/meus-agendamentos" onClick={() => setShowUserMenu(false)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "14px 16px", fontSize: "13px", color: "#999", textDecoration: "none" }}
                       onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#111")}
                       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}>

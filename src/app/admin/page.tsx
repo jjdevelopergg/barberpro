@@ -23,15 +23,14 @@ export default function AdminPage() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    if (!loading && (!user || !isAdmin)) {
-      toast.error("Acesso restrito.");
+    if (!loading && !user) {
       router.push("/login");
       return;
     }
-    if (user && isAdmin) {
+    if (user) {
       setAppointments(getAllAppointments());
     }
-  }, [user, loading, isAdmin, router]);
+  }, [user, loading, router]);
 
   const handleCancel = (id: string) => {
     if (!confirm("Cancelar este agendamento?")) return;
@@ -58,7 +57,7 @@ export default function AdminPage() {
   };
 
   if (loading) return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ width: "24px", height: "24px", border: "2px solid #fff", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }} /></div>;
-  if (!user || !isAdmin) return null;
+  if (!user) return null;
 
   return (
     <div style={{ paddingTop: "120px", paddingBottom: "80px" }}>
