@@ -41,7 +41,7 @@ export default function AgendarPage() {
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
-  const availableDates = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i + 1)).filter((d) => d.getDay() !== 0);
+  const availableDates = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i)).filter((d) => d.getDay() !== 0);
 
   useEffect(() => {
     if (!authLoading && !user) {
