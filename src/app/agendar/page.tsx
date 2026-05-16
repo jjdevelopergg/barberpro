@@ -7,7 +7,7 @@ import { createAppointment, getBookedSlots } from "@/lib/appointments";
 import { format, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import toast from "react-hot-toast";
-import { FiCalendar, FiClock, FiCheck, FiArrowRight, FiArrowLeft, FiUser } from "react-icons/fi";
+import { FiCalendar, FiClock, FiCheck, FiArrowRight, FiArrowLeft, FiUser, FiInfo, FiX } from "react-icons/fi";
 
 const services = [
   { id: "corte", name: "Corte de Cabelo", duration: "30 min", price: "R$ 45" },
@@ -21,10 +21,10 @@ const services = [
 ];
 
 const barbers = [
-  { id: "profissional-1", name: "Profissional 1", specialty: "Cortes Modernos" },
-  { id: "profissional-2", name: "Profissional 2", specialty: "Barba & Pigmentação" },
-  { id: "profissional-3", name: "Profissional 3", specialty: "Cortes Clássicos" },
-  { id: "profissional-4", name: "Profissional 4", specialty: "Tratamentos" },
+  { id: "profissional-1", name: "Profissional 1", specialty: "Cortes Modernos", years: 8, bio: "Especialista em degradê e cortes contemporâneos. Formação internacional.", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80&fit=crop&crop=face" },
+  { id: "profissional-2", name: "Profissional 2", specialty: "Barba & Pigmentação", years: 5, bio: "Expert em modelagem de barba e técnicas de pigmentação capilar.", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&q=80&fit=crop&crop=face" },
+  { id: "profissional-3", name: "Profissional 3", specialty: "Cortes Clássicos", years: 12, bio: "Veterano com mais de uma década de experiência em cortes tradicionais.", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80&fit=crop&crop=face" },
+  { id: "profissional-4", name: "Profissional 4", specialty: "Tratamentos", years: 4, bio: "Focado em tratamentos capilares, hidratação e cuidados especiais.", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80&fit=crop&crop=face" },
 ];
 
 const timeSlots = ["09:00","09:30","10:00","10:30","11:00","11:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30"];
@@ -35,6 +35,7 @@ export default function AgendarPage() {
   const [step, setStep] = useState(1);
   const [selectedService, setSelectedService] = useState<(typeof services)[0] | null>(null);
   const [selectedBarber, setSelectedBarber] = useState("");
+  const [showBarberInfo, setShowBarberInfo] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState("");
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
@@ -141,17 +142,58 @@ export default function AgendarPage() {
               {barbers.map((b) => (
                 <button key={b.id} onClick={() => setSelectedBarber(b.id)} style={{ padding: "18px", textAlign: "left", cursor: "pointer", backgroundColor: "#0a0a0a", border: selectedBarber === b.id ? "1px solid #fff" : "1px solid #1a1a1a", borderRadius: "12px", transition: "all 0.2s" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <div style={{ width: "36px", height: "36px", backgroundColor: "#111", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #1a1a1a" }}>
-                      <FiUser size={13} color="#666" />
-                    </div>
-                    <div>
+                    <img src={b.image} alt={b.name} style={{ width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", border: "2px solid #222" }} />
+                    <div style={{ flex: 1 }}>
                       <div style={{ color: "#fff", fontWeight: 500, fontSize: "13px" }}>{b.name}</div>
-                      <div style={{ color: "#444", fontSize: "11px" }}>{b.specialty}</div>
+                      <div style={{ color: "#666", fontSize: "11px" }}>{b.specialty}</div>
                     </div>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setShowBarberInfo(b.id); }}
+                      style={{ background: "none", border: "1px solid #222", borderRadius: "6px", padding: "4px 6px", cursor: "pointer", display: "flex", alignItems: "center" }}
+                    >
+                      <FiInfo size={12} color="#666" />
+                    </button>
                   </div>
                 </button>
               ))}
             </div>
+
+            {/* Barber Info Modal */}
+            {showBarberInfo && (() => {
+              const b = barbers.find(x => x.id === showBarberInfo);
+              if (!b) return null;
+              return (
+                <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }} onClick={() => setShowBarberInfo(null)}>
+                  <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)" }} />
+                  <div onClick={(e) => e.stopPropagation()} style={{ position: "relative", backgroundColor: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: "16px", padding: "32px", maxWidth: "400px", width: "100%" }}>
+                    <button onClick={() => setShowBarberInfo(null)} style={{ position: "absolute", top: "16px", right: "16px", background: "none", border: "none", color: "#666", cursor: "pointer" }}>
+                      <FiX size={18} />
+                    </button>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+                      <img src={b.image} alt={b.name} style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", border: "2px solid #222", marginBottom: "16px" }} />
+                      <h3 style={{ color: "#fff", fontSize: "18px", fontWeight: 700 }}>{b.name}</h3>
+                      <p style={{ color: "#888", fontSize: "13px", marginTop: "4px" }}>{b.specialty}</p>
+                      <div style={{ display: "flex", gap: "24px", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid #1a1a1a", width: "100%", justifyContent: "center" }}>
+                        <div>
+                          <div style={{ color: "#fff", fontSize: "20px", fontWeight: 700 }}>{b.years}</div>
+                          <div style={{ color: "#666", fontSize: "11px" }}>anos exp.</div>
+                        </div>
+                        <div>
+                          <div style={{ color: "#fff", fontSize: "20px", fontWeight: 700 }}>4.9</div>
+                          <div style={{ color: "#666", fontSize: "11px" }}>avaliação</div>
+                        </div>
+                      </div>
+                      <p style={{ color: "#aaa", fontSize: "13px", marginTop: "16px", lineHeight: "1.6" }}>{b.bio}</p>
+                      <button onClick={() => { setSelectedBarber(b.id); setShowBarberInfo(null); }} className="btn-primary" style={{ marginTop: "20px", width: "100%", justifyContent: "center" }}>
+                        Selecionar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "28px" }}>
               <button onClick={() => setStep(1)} style={{ display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "13px" }}><FiArrowLeft size={13} /> Voltar</button>
               <button onClick={() => selectedBarber && setStep(3)} disabled={!selectedBarber} className="btn-primary">Próximo <FiArrowRight size={13} /></button>
