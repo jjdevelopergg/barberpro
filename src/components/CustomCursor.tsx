@@ -1,40 +1,46 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
-export default function CustomCursor() {
-  const trailRef = useRef<HTMLDivElement>(null);
-
+export default function SmoothScroll() {
   useEffect(() => {
-    const trail = trailRef.current;
-    if (!trail) return;
+    let currentScroll = window.scrollY;
+    let targetScroll = window.scrollY;
+    let animating = false;
 
-    let mouseX = 0;
-    let mouseY = 0;
-    let trailX = 0;
-    let trailY = 0;
+    const ease = 0.07; // Lower = slower/smoother scroll
 
-    const onMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      targetScroll += e.deltaY * 0.8;
+      targetScroll = Math.max(0, Math.min(targetScroll, document.body.scrollHeight - window.innerHeight));
+
+      if (!animating) {
+        animating = true;
+        animate();
+      }
     };
 
     const animate = () => {
-      // Smooth delay - the trail follows the mouse with lag
-      trailX += (mouseX - trailX) * 0.08;
-      trailY += (mouseY - trailY) * 0.08;
-      trail.style.left = trailX + "px";
-      trail.style.top = trailY + "px";
+      currentScroll += (targetScroll - currentScroll) * ease;
+
+      if (Math.abs(targetScroll - currentScroll) < 0.5) {
+        currentScroll = targetScroll;
+        window.scrollTo(0, currentScroll);
+        animating = false;
+        return;
+      }
+
+      window.scrollTo(0, currentScroll);
       requestAnimationFrame(animate);
     };
 
-    document.addEventListener("mousemove", onMouseMove);
-    animate();
+    window.addEventListener("wheel", onWheel, { passive: false });
 
     return () => {
-      document.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("wheel", onWheel);
     };
   }, []);
 
-  return <div ref={trailRef} className="cursor-trail" />;
+  return null;
 }
