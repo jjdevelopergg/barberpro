@@ -1,26 +1,42 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export default function ScrollReveal() {
+  const pathname = usePathname();
+
   useEffect(() => {
-    const sections = document.querySelectorAll("section");
+    // Small delay to let the DOM render
+    const timeout = setTimeout(() => {
+      const sections = document.querySelectorAll("section");
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-    );
+      // Immediately show sections that are already in viewport
+      sections.forEach((section) => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top < window.innerHeight) {
+          section.classList.add("visible");
+        }
+      });
 
-    sections.forEach((section) => observer.observe(section));
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+            }
+          });
+        },
+        { threshold: 0.05, rootMargin: "0px 0px -20px 0px" }
+      );
 
-    return () => observer.disconnect();
-  }, []);
+      sections.forEach((section) => observer.observe(section));
+
+      return () => observer.disconnect();
+    }, 50);
+
+    return () => clearTimeout(timeout);
+  }, [pathname]); // Re-run when route changes
 
   return null;
 }
