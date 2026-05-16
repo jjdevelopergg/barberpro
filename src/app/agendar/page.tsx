@@ -47,11 +47,15 @@ export default function AgendarPage() {
   useEffect(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const currentMonth = today.getMonth();
     const dates: Date[] = [];
-    for (let i = 0; i < 30; i++) {
+    
+    // Mostra apenas dias úteis do mês atual
+    for (let i = 0; i < 31; i++) {
       const d = new Date(today);
       d.setDate(today.getDate() + i);
-      if (d.getDay() !== 0 && d.getDay() !== 6) { // Pula sábado e domingo
+      if (d.getMonth() !== currentMonth) break; // Para quando mudar de mês
+      if (d.getDay() !== 0 && d.getDay() !== 6) {
         dates.push(d);
       }
     }
