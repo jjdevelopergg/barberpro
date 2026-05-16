@@ -9,8 +9,8 @@ export default function ServicosPage() {
     { title: "Barba", description: "Modelagem com navalha e toalha quente", price: "R$ 30", duration: "20 min", image: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&q=80" },
     { title: "Corte + Barba", description: "Combo completo em uma única sessão", price: "R$ 65", duration: "50 min", image: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&q=80" },
     { title: "Degradê", description: "Transição suave com acabamento impecável", price: "R$ 55", duration: "40 min", image: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&q=80" },
-    { title: "Pigmentação", description: "Preenchimento capilar profissional", price: "R$ 80", duration: "45 min", image: "https://images.unsplash.com/photo-1585747860036-4cb4e2e43a35?w=400&q=80" },
-    { title: "Hidratação", description: "Tratamento profundo para cabelos", price: "R$ 50", duration: "30 min", image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=80" },
+    { title: "Pigmentação", description: "Preenchimento capilar profissional", price: "R$ 80", duration: "45 min", image: "https://images.unsplash.com/photo-1493256338651-d82f7acb2b38?w=400&q=80" },
+    { title: "Hidratação", description: "Tratamento profundo para cabelos", price: "R$ 50", duration: "30 min", image: "https://images.unsplash.com/photo-1562004760-aceed7bb0fe3?w=400&q=80" },
   ];
 
   return (
