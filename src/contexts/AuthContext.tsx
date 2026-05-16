@@ -6,12 +6,14 @@ interface UserData {
   uid: string;
   email: string;
   displayName: string;
+  role: "admin" | "user";
   providerData: { providerId: string }[];
 }
 
 interface AuthContextType {
   user: UserData | null;
   loading: boolean;
+  isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
@@ -22,9 +24,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
+// Conta admin fixa
+const ADMIN_ACCOUNT = { email: "admin@admin.com", password: "admin123", name: "Administrador" };
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const isAdmin = user?.role === "admin";
 
   useEffect(() => {
     const saved = localStorage.getItem("bp-session");
@@ -39,6 +46,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   const signIn = async (email: string, password: string) => {
+    // Check admin account
+    if (email === ADMIN_ACCOUNT.email && password === ADMIN_ACCOUNT.password) {
+      setUser({
+        uid: "admin-001",
+        email: ADMIN_ACCOUNT.email,
+        displayName: ADMIN_ACCOUNT.name,
+        role: "admin",
+        providerData: [{ providerId: "password" }],
+      });
+      return;
+    }
+
+    // Check regular accounts
     const accounts = JSON.parse(localStorage.getItem("bp-accounts") || "[]");
     const account = accounts.find((a: { email: string; password: string }) => a.email === email && a.password === password);
 
@@ -50,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       uid: "u-" + email.replace(/[^a-z0-9]/g, ""),
       email: account.email,
       displayName: account.name || email.split("@")[0],
+      role: "user",
       providerData: [{ providerId: "password" }],
     });
   };
@@ -67,6 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       uid: "u-" + email.replace(/[^a-z0-9]/g, ""),
       email,
       displayName: name,
+      role: "user",
       providerData: [{ providerId: "password" }],
     });
   };
@@ -76,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       uid: "g-" + Date.now(),
       email: "usuario@gmail.com",
       displayName: "Usuário",
+      role: "user",
       providerData: [{ providerId: "google.com" }],
     });
   };
@@ -87,7 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resetPassword = async (email: string) => {
     const accounts = JSON.parse(localStorage.getItem("bp-accounts") || "[]");
-    if (!accounts.find((a: { email: string }) => a.email === email)) {
+    if (!accounts.find((a: { email: string }) => a.email === email) && email !== ADMIN_ACCOUNT.email) {
       throw { code: "auth/user-not-found" };
     }
   };
@@ -100,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, logout, resetPassword, updateUserProfile }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, signIn, signUp, signInWithGoogle, logout, resetPassword, updateUserProfile }}>
       {children}
     </AuthContext.Provider>
   );

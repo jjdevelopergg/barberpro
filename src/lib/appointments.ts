@@ -34,6 +34,10 @@ export function getAppointmentsByUser(userId: string): Appointment[] {
     .sort((a, b) => new Date(`${b.date}T${b.time}`).getTime() - new Date(`${a.date}T${a.time}`).getTime());
 }
 
+export function getAllAppointments(): Appointment[] {
+  return getAll().sort((a, b) => new Date(`${b.date}T${b.time}`).getTime() - new Date(`${a.date}T${a.time}`).getTime());
+}
+
 export function getBookedSlots(date: string, barber: string): string[] {
   return getAll()
     .filter((a) => a.date === date && a.barber === barber && a.status === "confirmado")
