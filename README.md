@@ -2,18 +2,34 @@
 
 🔗 [barbearia-nu-topaz.vercel.app](https://barbearia-nu-topaz.vercel.app)
 
-Sistema web de agendamento online para barbearias com autenticação, gerenciamento de horários e interface responsiva.
+Sistema web completo de agendamento online para barbearias com painel administrativo, autenticação, gerenciamento de horários e interface responsiva.
 
 ## Funcionalidades
 
-- Autenticação (login, cadastro, recuperação de senha, Google OAuth)
-- Agendamento em etapas (serviço → profissional → data/hora → confirmação)
-- Verificação de disponibilidade em tempo real
-- Gerenciamento e cancelamento de agendamentos (política de 1h mínima)
-- Perfil do usuário editável
-- Persistência de sessão
-- Mapa de localização integrado
-- Design responsivo e minimalista
+**Cliente:**
+- Autenticação (login, cadastro, recuperação de senha, Google)
+- Agendamento em 4 etapas (serviço → profissional → data/hora → confirmação)
+- Calendário inteligente (dias úteis do mês atual, horários passados desabilitados)
+- Perfil dos profissionais com foto, bio e anos de experiência
+- Gerenciamento de agendamentos (visualização, cancelamento)
+- Política de cancelamento (mínimo 1 hora de antecedência)
+- Tolerância de 15 minutos de atraso com justificativa
+- Botão para ver localização no mapa
+- Persistência de sessão (não desloga ao recarregar)
+
+**Painel Administrativo:**
+- Dashboard com estatísticas (total, próximos, hoje, cancelados)
+- Visualização de todos os agendamentos de todos os clientes
+- Agendamentos agrupados por dia em ordem cronológica
+- Filtros (todos, próximos, cancelados)
+- Busca por nome, email ou serviço
+- Cancelamento de qualquer agendamento
+
+**Interface:**
+- Design minimalista preto e branco
+- Animações de entrada nas seções (scroll reveal)
+- Responsivo (mobile + desktop)
+- Mapa integrado na página de contato
 
 ## Tecnologias
 
@@ -25,6 +41,13 @@ Sistema web de agendamento online para barbearias com autenticação, gerenciame
 - React Icons
 - Vercel (deploy)
 
+## Executar
+
+```bash
+npm install
+npm run dev
+```
+
 ## Licença
 
-Projeto privado. Consulte o arquivo [LICENSE](LICENSE).
+Consulte o arquivo [LICENSE](LICENSE).
