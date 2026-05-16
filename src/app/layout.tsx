@@ -4,6 +4,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "react-hot-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CustomCursor from "@/components/CustomCursor";
+import ScrollReveal from "@/components/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "Barbearia | Agendamento Online",
@@ -26,6 +28,8 @@ export default function RootLayout({
               success: { iconTheme: { primary: "#fff", secondary: "#000" } },
             }}
           />
+          <CustomCursor />
+          <ScrollReveal />
           <Navbar />
           <main style={{ minHeight: "100vh" }}>{children}</main>
           <Footer />

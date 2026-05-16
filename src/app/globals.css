@@ -22,6 +22,52 @@ body {
   font-family: "Inter", system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  cursor: none;
+}
+
+/* Custom cursor */
+.cursor {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  transform: translate(-50%, -50%);
+}
+
+.cursor-dot {
+  width: 4px;
+  height: 4px;
+  background-color: #fff;
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.05s ease;
+}
+
+a, button {
+  cursor: none;
+}
+
+/* Smooth scroll with delay feel */
+* {
+  scroll-behavior: smooth;
+}
+
+section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+section.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 ::-webkit-scrollbar {
