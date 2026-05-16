@@ -20,9 +20,10 @@ export default function Home() {
             muted
             loop
             playsInline
-            style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.3 }}
+            poster="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=1920&q=80"
+            style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.35 }}
           >
-            <source src="https://videos.pexels.com/video-files/6724687/6724687-uhd_2560_1440_30fps.mp4" type="video/mp4" />
+            <source src="https://cdn.pixabay.com/video/2020/07/30/45894-446612498_large.mp4" type="video/mp4" />
           </video>
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.85) 100%)" }} />
         </div>
