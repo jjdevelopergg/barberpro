@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { getAllAppointments, cancelAppointment, isUpcoming, Appointment } from "@/lib/appointments";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
-import { FiCalendar, FiClock, FiUser, FiTrash2, FiMail, FiFilter } from "react-icons/fi";
+import { FiCalendar, FiClock, FiUser, FiTrash2, FiFilter } from "react-icons/fi";
 
 const barberData: Record<string, { name: string; image: string }> = {
   "profissional-1": { name: "Carlos Silva", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=80&fit=crop&crop=face" },
@@ -47,6 +47,18 @@ export default function AdminPage() {
     if (!search) return true;
     const s = search.toLowerCase();
     return apt.userName.toLowerCase().includes(s) || apt.userEmail.toLowerCase().includes(s) || apt.service.toLowerCase().includes(s);
+  }).sort((a, b) => {
+    // Ordena por data e horário (próximos primeiro)
+    const dateA = new Date(`${a.date}T${a.time}`);
+    const dateB = new Date(`${b.date}T${b.time}`);
+    return dateA.getTime() - dateB.getTime();
+  });
+
+  // Agrupa por dia
+  const groupedByDay: Record<string, typeof filtered> = {};
+  filtered.forEach((apt) => {
+    if (!groupedByDay[apt.date]) groupedByDay[apt.date] = [];
+    groupedByDay[apt.date].push(apt);
   });
 
   const stats = {
@@ -110,55 +122,73 @@ export default function AdminPage() {
             <p style={{ color: "#444", fontSize: "14px" }}>Nenhum agendamento encontrado.</p>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            {filtered.map((apt, i) => {
-              const upcoming = apt.status === "confirmado" && isUpcoming(apt.date, apt.time);
-              const barber = barberData[apt.barber];
-
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            {Object.entries(groupedByDay).map(([date, dayAppointments]) => {
+              const dateObj = new Date(date + "T12:00:00");
+              const isToday = new Date().toDateString() === dateObj.toDateString();
+              
               return (
-                <div key={apt.id} className={`card animate-fade-up-delay-${Math.min(i + 1, 4)}`} style={{ padding: "20px 24px", opacity: apt.status === "cancelado" ? 0.5 : 1 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px" }}>
-                    {/* Client Info */}
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                        <div style={{ width: "32px", height: "32px", backgroundColor: "#111", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #1a1a1a" }}>
-                          <FiUser size={13} color="#888" />
-                        </div>
-                        <div>
-                          <div style={{ color: "#fff", fontSize: "13px", fontWeight: 600 }}>{apt.userName}</div>
-                          <div style={{ color: "#555", fontSize: "11px", display: "flex", alignItems: "center", gap: "4px" }}><FiMail size={10} /> {apt.userEmail}</div>
-                        </div>
-                      </div>
+                <div key={date}>
+                  {/* Day Header */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px", paddingBottom: "8px", borderBottom: "1px solid #111" }}>
+                    <span style={{ color: isToday ? "#fff" : "#888", fontSize: "13px", fontWeight: 600 }}>
+                      {isToday ? "Hoje" : format(dateObj, "EEEE", { locale: undefined }).charAt(0).toUpperCase() + format(dateObj, "EEEE").slice(1)}
+                    </span>
+                    <span style={{ color: "#444", fontSize: "12px" }}>{format(dateObj, "dd/MM/yyyy")}</span>
+                    <span style={{ backgroundColor: "#1a1a1a", color: "#888", fontSize: "10px", padding: "2px 8px", borderRadius: "4px" }}>{dayAppointments.length} agendamento{dayAppointments.length > 1 ? "s" : ""}</span>
+                  </div>
 
-                      <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginTop: "10px" }}>
-                        <span style={{ color: "#ccc", fontSize: "12px", fontWeight: 500 }}>{apt.service}</span>
-                        <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#666", fontSize: "11px" }}><FiCalendar size={10} /> {format(new Date(apt.date + "T12:00:00"), "dd/MM/yyyy")} • <span style={{ textTransform: "capitalize" }}>{apt.dayOfWeek}</span></span>
-                        <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#666", fontSize: "11px" }}><FiClock size={10} /> {apt.time}</span>
-                      </div>
+                  {/* Day Appointments */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                    {dayAppointments.map((apt) => {
+                      const upcoming = apt.status === "confirmado" && isUpcoming(apt.date, apt.time);
+                      const barber = barberData[apt.barber];
 
-                      {barber && (
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "8px" }}>
-                          <img src={barber.image} alt="" style={{ width: "20px", height: "20px", borderRadius: "50%", objectFit: "cover" }} />
-                          <span style={{ color: "#888", fontSize: "11px" }}>{barber.name}</span>
+                      return (
+                        <div key={apt.id} className="card" style={{ padding: "16px 20px", opacity: apt.status === "cancelado" ? 0.4 : 1 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
+                            {/* Time + Client */}
+                            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                              <div style={{ minWidth: "50px", textAlign: "center" }}>
+                                <div style={{ color: "#fff", fontSize: "15px", fontWeight: 700 }}>{apt.time}</div>
+                              </div>
+                              <div style={{ width: "1px", height: "32px", backgroundColor: "#1a1a1a" }} />
+                              <div>
+                                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                  <span style={{ color: "#fff", fontSize: "13px", fontWeight: 500 }}>{apt.userName}</span>
+                                  <span style={{ color: "#444", fontSize: "11px" }}>• {apt.service}</span>
+                                </div>
+                                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+                                  <span style={{ color: "#555", fontSize: "11px" }}>{apt.userEmail}</span>
+                                  {barber && (
+                                    <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                      <img src={barber.image} alt="" style={{ width: "14px", height: "14px", borderRadius: "50%", objectFit: "cover" }} />
+                                      <span style={{ color: "#666", fontSize: "10px" }}>{barber.name}</span>
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Price + Actions */}
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                              <span style={{ color: "#888", fontWeight: 600, fontSize: "13px" }}>{apt.servicePrice}</span>
+                              {apt.status === "cancelado" ? (
+                                <span style={{ color: "#ef4444", fontSize: "10px", fontWeight: 500, padding: "3px 8px", backgroundColor: "rgba(239,68,68,0.1)", borderRadius: "4px" }}>Cancelado</span>
+                              ) : upcoming ? (
+                                <button onClick={() => handleCancel(apt.id)} style={{ background: "none", border: "1px solid #1a1a1a", color: "#555", cursor: "pointer", padding: "4px 8px", borderRadius: "5px", display: "flex", alignItems: "center", gap: "3px", fontSize: "10px", transition: "all 0.2s" }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#ef4444"; e.currentTarget.style.color = "#ef4444"; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1a1a1a"; e.currentTarget.style.color = "#555"; }}>
+                                  <FiTrash2 size={10} />
+                                </button>
+                              ) : (
+                                <span style={{ color: "#444", fontSize: "10px", padding: "3px 8px", backgroundColor: "#111", borderRadius: "4px" }}>✓</span>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                      )}
-                    </div>
-
-                    {/* Actions */}
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
-                      <span style={{ color: "#888", fontWeight: 600, fontSize: "14px" }}>{apt.servicePrice}</span>
-                      {apt.status === "cancelado" ? (
-                        <span style={{ color: "#ef4444", fontSize: "10px", fontWeight: 500, padding: "3px 8px", backgroundColor: "rgba(239,68,68,0.1)", borderRadius: "4px" }}>Cancelado</span>
-                      ) : upcoming ? (
-                        <button onClick={() => handleCancel(apt.id)} style={{ background: "none", border: "1px solid #1a1a1a", color: "#555", cursor: "pointer", padding: "5px 10px", borderRadius: "6px", display: "flex", alignItems: "center", gap: "4px", fontSize: "11px", transition: "all 0.2s" }}
-                          onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#ef4444"; e.currentTarget.style.color = "#ef4444"; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1a1a1a"; e.currentTarget.style.color = "#555"; }}>
-                          <FiTrash2 size={11} /> Cancelar
-                        </button>
-                      ) : (
-                        <span style={{ color: "#444", fontSize: "10px", padding: "3px 8px", backgroundColor: "#111", borderRadius: "4px" }}>Concluído</span>
-                      )}
-                    </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
