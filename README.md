@@ -41,13 +41,6 @@ Sistema web completo de agendamento online para barbearias com painel administra
 - React Icons
 - Vercel (deploy)
 
-## Executar
-
-```bash
-npm install
-npm run dev
-```
-
 ## Licença
 
 Consulte o arquivo [LICENSE](LICENSE).
