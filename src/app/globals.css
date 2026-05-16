@@ -24,7 +24,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom cursor trail - follows mouse with delay */
+/* Custom cursor trail - disabled */
 .cursor-trail {
   display: none;
 }
@@ -32,13 +32,23 @@ body {
 /* Smooth scroll with inertia */
 section {
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(50px);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 section.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Staggered children animation */
+section.visible > div > div {
+  animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 ::-webkit-scrollbar {
